@@ -1,1 +1,12 @@
 @import "tailwindcss";
+
+/* Variant that works with next-themes */
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+@layer base {
+  .custom-blur {
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    will-change: backdrop-filter;
+  }
+}
