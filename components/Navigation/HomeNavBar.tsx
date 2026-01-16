@@ -31,13 +31,33 @@ const HomeNavBar = () => {
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-2">
           <Link href="/" className="h-8 w-8">
-            <Image src={assets.issue_desk_logo} alt="Issue Desk Logo" />
+            <Image
+              src={assets.issue_desk_image}
+              alt="Issue Desk Logo"
+              className="dark:invert"
+            />
           </Link>
-          <span className="hidden text-xl font-semibold sm:flex">
+          <span className="hidden text-xl font-semibold text-black sm:flex dark:text-white">
             Issue Desk
           </span>
         </div>
-        <ThemeToggle />
+        <div className="flex items-center gap-4">
+          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <Link
+              href="/login"
+              className="rounded-full px-4 py-2 text-black hover:bg-gray-200 dark:text-white dark:hover:bg-neutral-800"
+            >
+              Login
+            </Link>
+            <Link
+              href="/register"
+              className="rounded-full bg-neutral-950 px-4 py-2 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
+            >
+              Register
+            </Link>
+          </div>
+        </div>
       </nav>
     </div>
   );

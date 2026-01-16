@@ -6,7 +6,11 @@ interface ProviderProps {
 
 const Provider = ({ children }: ProviderProps) => {
   return (
-    <ThemeProvider enableSystem defaultTheme="system" disableTransitionOnChange>
+    <ThemeProvider
+      enableSystem={true}
+      defaultTheme="system"
+      disableTransitionOnChange={true}
+    >
       {children}
     </ThemeProvider>
   );
