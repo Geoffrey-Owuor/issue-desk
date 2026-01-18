@@ -1,13 +1,13 @@
 import { currentYear } from "@/public/assets";
 
-const VerificationCodeTemplate = (verificationCode: string): string => {
+const ResendLinkTemplate = (resetLink: string): string => {
   return `
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verification Code</title>
+    <title>Reset Your Password</title>
     <style>
         /* Resets to ensure consistent rendering across clients */
         body { margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f4f4f7; color: #51545E; }
@@ -24,9 +24,13 @@ const VerificationCodeTemplate = (verificationCode: string): string => {
         h1 { font-size: 24px; font-weight: bold; margin: 0 0 20px; color: #333333; }
         p { font-size: 16px; line-height: 1.6; margin: 0 0 20px; }
         
-        /* Code Box Style */
-        .code-box { background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; text-align: center; padding: 24px; margin: 30px 0; }
-        .verification-code { font-family: 'Courier New', Courier, monospace; font-size: 32px; font-weight: bold; letter-spacing: 4px; color: #2c3e50; margin: 0; }
+        /* Button Style */
+        .btn-container { text-align: center; margin: 30px 0; }
+        .btn { display: inline-block; background-color: #2c3e50; color: #ffffff; font-size: 16px; font-weight: bold; text-decoration: none; padding: 14px 30px; border-radius: 6px; }
+        
+        /* Link Fallback */
+        .link-fallback { font-size: 12px; color: #999999; word-break: break-all; margin-top: 20px; }
+        .link-fallback a { color: #2c3e50; }
     </style>
 </head>
 <body>
@@ -40,16 +44,19 @@ const VerificationCodeTemplate = (verificationCode: string): string => {
 
             <tr>
                 <td class="content">
-                    <h1>Verify your identity</h1>
+                    <h1>Reset your password</h1>
                     <p>Hello,</p>
-                    <p>We received a request to register for an Issue Desk account. Please use the verification code below to complete the process.</p>
+                    <p>We received a request to reset the password for your Issue Desk account. Click the button below to set a new password.</p>
                     
-                    <div class="code-box">
-                        <p class="verification-code">${verificationCode}</p>
+                    <div class="btn-container">
+                        <a href="${resetLink}" class="btn">Reset Password</a>
                     </div>
 
-                    <p>This code will expire in 10 minutes. If you did not request this code, please ignore this email or contact support if you have concerns.</p>
-                    <p>Best regards,<br>The Issue Desk Team</p>
+                    <p>If the button doesn't work, you can copy and paste the following link into your browser:</p>
+                    <p class="link-fallback"><a href="${resetLink}">${resetLink}</a></p>
+
+                    <p>This link will expire in 10 minutes. If you did not request a password reset, you can safely ignore this email.</p>
+                    
                 </td>
             </tr>
         </table>
@@ -63,4 +70,4 @@ const VerificationCodeTemplate = (verificationCode: string): string => {
   `;
 };
 
-export default VerificationCodeTemplate;
+export default ResendLinkTemplate;
