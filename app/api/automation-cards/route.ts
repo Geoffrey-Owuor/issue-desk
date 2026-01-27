@@ -2,52 +2,42 @@ import { query } from "@/lib/Db";
 import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 
-export const GET = withAuth(async ({ user }) => {
-  const { userId, role, email, department } = user;
+export const GET = withAuth(async ({ request }) => {
+  // get query params from the request url
+  const searchParams = request.nextUrl.searchParams;
+  const department = searchParams.get("department");
 
-  // 1. Determine the Dynamic Column & Value
-  let filterColumn = "";
-  let filterValue = "";
-
-  switch (role) {
-    case "admin":
-      filterColumn = "issue_target_department";
-      filterValue = department;
-      break;
-    case "agent":
-      filterColumn = "issue_agent_email";
-      filterValue = email;
-      break;
-    default:
-      filterColumn = "issue_submitter_id";
-      filterValue = userId;
-      break;
-  }
-
-  // 2. Helper to run a Safe, Parameterized Query
+  // Totals per status
   const runStatusQuery = (status: string) => {
-    const sql = `
-      SELECT COUNT(*) AS count 
-      FROM issues_table 
-      WHERE issue_status = $1 AND ${filterColumn} = $2
-    `;
+    let sql = `SELECT COUNT(*) AS count
+        FROM issues_table WHERE issue_type = 'Automation' AND issue_status = $1`;
+    const params = [status];
 
-    // We pass the actual values here. Postgres handles quotes and security.
-    return query(sql, [status, filterValue]);
+    if (department) {
+      sql += ` AND issue_target_department = $2`;
+      params.push(department);
+    }
+
+    return query(sql, params);
   };
 
-  // running the total's query
+  // General totals
   const runTotalsQuery = () => {
-    const sql = `
+    let sql = `
     SELECT COUNT(*) AS count
-    FROM issues_table WHERE ${filterColumn} = $1`;
+    FROM issues_table WHERE issue_type = 'Automation'`;
+    const params = [];
 
-    return query(sql, [filterValue]);
+    if (department) {
+      sql += ` AND issue_target_department = $1`;
+      params.push(department);
+    }
+
+    return query(sql, params);
   };
 
   try {
-    // 3. Fire all 4 requests in parallel
-    // We get an array of results: [ [row1], [row2], ... ]
+    // Fire all four requests in parallel
     const results = await Promise.all([
       runTotalsQuery(),
       runStatusQuery("pending"),
@@ -56,8 +46,7 @@ export const GET = withAuth(async ({ user }) => {
       runStatusQuery("unfeasible"),
     ]);
 
-    // 4. Extract data safely
-    // Assuming 'query' returns an array of rows.
+    // Extract the returned data
     const [totalRows, pendingRows, progressRows, resolvedRows, unfeasibleRows] =
       results;
 
