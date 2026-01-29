@@ -2,19 +2,17 @@ import { query } from "@/lib/Db";
 import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 
-export const GET = withAuth(async ({ user, request }) => {
-  // destructure user details
-  const { userId, email, role, department } = user;
+export const GET = withAuth(async ({ request }) => {
+  //Our main filter
+  const IssueTypeFilter = "Automation";
 
   // Extract query parameters from the request url
   const searchParams = request.nextUrl.searchParams;
   const selectedFilter = searchParams.get("selectedFilter");
-  const agentAdminFilter = searchParams.get("agentAdminFilter");
+  const departmentFilter = searchParams.get("departmentFilter");
   const status = searchParams.get("status");
   const reference = searchParams.get("reference");
-  const departmentParams = searchParams.get("department");
   const agent = searchParams.get("agent");
-  const issueType = searchParams.get("type");
   const submitter = searchParams.get("submitter");
   const fromDate = searchParams.get("fromDate");
   const toDate = searchParams.get("toDate");
@@ -31,73 +29,35 @@ export const GET = withAuth(async ({ user, request }) => {
     const whereClauses: string[] = [];
     const params: (string | number)[] = [];
 
-    //construct clauses based on role
-    // Users see only what they are allowed to see
-    if (role === "user") {
-      whereClauses.push(`issue_submitter_id = $${params.length + 1}`);
-      params.push(userId);
-    } else if (role === "admin") {
-      if (agentAdminFilter === "agentAdminFilter") {
-        whereClauses.push(`issue_submitter_id = $${params.length + 1}`);
-        params.push(userId);
-      } else {
-        whereClauses.push(`issue_target_department = $${params.length + 1}`);
-        params.push(department);
-      }
-    } else if (role === "agent") {
-      if (agentAdminFilter === "agentAdminFilter") {
-        whereClauses.push(`issue_submitter_id = $${params.length + 1}`);
-        params.push(userId);
-      } else {
-        whereClauses.push(`issue_agent_email = $${params.length + 1}`);
-        params.push(email);
-      }
+    // General filters for the Automations query
+    if (IssueTypeFilter) {
+      whereClauses.push(`issue_type = $${params.length + 1}`);
+      params.push(IssueTypeFilter);
+    }
+
+    if (departmentFilter) {
+      whereClauses.push(`issue_submitter_department = $${params.length + 1}`);
+      params.push(departmentFilter);
     }
 
     // Dynamic filtering based on client params
-
     // status filter
     if (selectedFilter === "status" && status) {
       whereClauses.push(`issue_status = $${params.length + 1}`);
       params.push(status);
     }
-
     // reference filter
     else if (selectedFilter === "reference" && reference) {
       whereClauses.push(`issue_reference_id ILIKE $${params.length + 1}`);
       params.push(`%${reference}%`);
     }
-
-    // department filtering
-    else if (selectedFilter === "department" && departmentParams) {
-      if (role === "user") {
-        whereClauses.push(`issue_target_department = $${params.length + 1}`);
-      } else if (role === "admin" || role === "agent") {
-        if (agentAdminFilter === "agentAdminFilter") {
-          whereClauses.push(`issue_target_department = $${params.length + 1}`);
-        } else {
-          whereClauses.push(
-            `issue_submitter_department = $${params.length + 1}`,
-          );
-        }
-      }
-
-      params.push(departmentParams);
-    }
-
     // Agent filtering
     else if (selectedFilter === "agent" && agent) {
       whereClauses.push(`issue_agent_name ILIKE $${params.length + 1}`);
       params.push(`%${agent}%`);
     }
 
-    // Issue type filtering
-    else if (selectedFilter === "type" && issueType) {
-      whereClauses.push(`issue_type ILIKE $${params.length + 1}`);
-      params.push(`%${issueType}%`);
-    }
-
-    // Submitter filter
+    // Submitter filtering
     else if (selectedFilter === "submitter" && submitter) {
       whereClauses.push(`issue_submitter_name ILIKE $${params.length + 1}`);
       params.push(`%${submitter}%`);
@@ -122,11 +82,10 @@ export const GET = withAuth(async ({ user, request }) => {
 
     baseQuery += ` ORDER BY issue_created_at DESC`;
 
-    // Execute the query
-    const issuesData = await query(baseQuery, params);
+    const automationsData = await query(baseQuery, params);
 
     // return a response
-    return NextResponse.json(issuesData, { status: 200 });
+    return NextResponse.json(automationsData, { status: 200 });
   } catch (error) {
     console.error("Error retrieving the issue data", error);
     return NextResponse.json(
