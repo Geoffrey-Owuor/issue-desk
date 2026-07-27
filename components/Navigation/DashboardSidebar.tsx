@@ -10,6 +10,7 @@ import {
   NotebookPen,
   Keyboard,
   CircleQuestionMark,
+  HousePlug,
 } from "lucide-react";
 import Link from "next/link";
 import ThemeToggle from "../Themes/ThemeToggle";
@@ -228,6 +229,14 @@ const DashboardSidebar = () => {
         {/* The back button */}
         <div className="mt-auto w-full px-2">
           <div className="flex w-full flex-col items-center justify-center gap-4">
+            {/* The main hub link - uses a tag to avoid basePath issues */}
+            <a
+              href={`${process.env.NEXT_PUBLIC_HUB_URL}/dashboard`}
+              className="flex w-full flex-col items-center gap-1 rounded-2xl py-2.5 text-[10px] font-semibold text-neutral-600 transition-colors hover:bg-neutral-200 hover:text-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
+            >
+              <HousePlug className="h-5 w-5" />
+              <span>Hub</span>
+            </a>
             {/* Back */}
             <SidebarButton
               onClick={() => router.back()}
