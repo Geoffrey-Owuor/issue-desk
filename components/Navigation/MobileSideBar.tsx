@@ -12,6 +12,7 @@ import {
   ShieldPlus,
   LayoutDashboard,
   NotebookPen,
+  HousePlug,
 } from "lucide-react";
 import MainIssueModal from "../Modules/IssueModals/MainIssueModal";
 import { useUser } from "@/contexts/UserContext";
@@ -169,6 +170,14 @@ const MobileSideBar = ({
               <NotebookPen className="h-5 w-5" />
               <span>Articles Hub</span>
             </Link>
+            <a
+              href={`${process.env.NEXT_PUBLIC_HUB_URL}/dashboard`}
+              onClick={() => setSideBarOpen(false)}
+              className="flex w-full items-center gap-2 rounded-xl p-3 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
+            >
+              <HousePlug className="h-5 w-5" />
+              <span>Apps Hub</span>
+            </a>
           </nav>
         </aside>
       </div>
