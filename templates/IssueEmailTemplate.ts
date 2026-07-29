@@ -378,9 +378,6 @@ export function generateIssueNotificationEmail(
                   </tr>
                 </table>
 
-                <!-- Optional Issue Remarks Section -->
-                ${remarksHtml}
-
                 <!-- Optional Comment Section -->
                 ${commentHtml}
 
@@ -390,7 +387,9 @@ export function generateIssueNotificationEmail(
                 <!-- Optional Reason Escalated Section -->
                 ${escalatedHtml}
 
-              
+                <!-- Optional Issue Remarks Section -->
+                ${remarksHtml}
+
                 <!-- View Issue Button -->
                 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 24px; margin-bottom:24px;">
                   <tr>
